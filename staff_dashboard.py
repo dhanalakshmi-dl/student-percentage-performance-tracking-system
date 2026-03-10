@@ -97,6 +97,9 @@ class StaffDashboard:
 
         path=filedialog.asksaveasfilename(defaultextension=".csv")
 
+        if path == "":
+            return
+
         with open(path,"w",newline="") as f:
             writer=csv.writer(f)
             writer.writerow(["ID","Student","Subject","Internal","External","Total","Percentage"])

@@ -95,12 +95,14 @@ class AdminDashboard:
                 messagebox.showerror("Error", "Enter all fields")
                 return
 
+            s = int(s)
+
             conn = sqlite3.connect("college.db")
             cursor = conn.cursor()
 
             try:
                 cursor.execute(
-                    "INSERT INTO students VALUES (?,?)",
+                    "INSERT INTO students (student_id, name) VALUES (?,?)",
                     (s, n)
                 )
                 conn.commit()
@@ -109,7 +111,7 @@ class AdminDashboard:
                 sid.delete(0, tk.END)
                 name.delete(0, tk.END)
 
-            except:
+            except sqlite3.IntegrityError:
                 messagebox.showerror("Error", "Student ID already exists")
 
             conn.close()
@@ -164,7 +166,7 @@ class AdminDashboard:
                              show="headings")
 
         table.heading("id", text="Student ID")
-        table.heading("percentage", text="Percentage")
+        table.heading("percentage", text="Average Marks")
 
         table.pack(fill="both", expand=True)
 
@@ -172,9 +174,10 @@ class AdminDashboard:
         cursor = conn.cursor()
 
         cursor.execute("""
-        SELECT student_id, percentage
-        FROM results
-        ORDER BY percentage DESC
+        SELECT student_id, AVG(total) as avg_marks
+        FROM marks
+        GROUP BY student_id
+        ORDER BY avg_marks DESC
         LIMIT 10
         """)
 
